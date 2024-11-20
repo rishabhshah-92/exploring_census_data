@@ -8,7 +8,7 @@ library(geojsonsf)
 
 source('load_state_boundaries.R')
 
-df <- read_excel("data_dump/india/DDW-0000C-09.xlsx",sheet=2) %>%
+gl_df <- read_excel("data_dump/india/DDW-0000C-09.xlsx",sheet=2) %>%
   filter(urbanity=='Total' & area_name!='INDIA' & age_group=='Total') %>%
   filter(religion == 'All religious communities') %>%
   mutate(area_name=str_remove(area_name,"State - "),
@@ -18,13 +18,13 @@ df <- read_excel("data_dump/india/DDW-0000C-09.xlsx",sheet=2) %>%
          , male_literacy = literate_males/tot_males
          , gender_gap=(male_literacy-female_literacy)*1e2)
 
-df_to_map <- states %>% 
-  merge(df, on="area_name") %>%
+gl_df_to_map <- states %>% 
+  merge(gl_df, on="area_name") %>%
   mutate(border_show=area_name %in% c('ANDAMAN & NICOBAR','LAKSHADWEEP'))
 
-NATIONWIDE_AVG <- mean(df_to_map$gender_gap)
+NATIONWIDE_AVG <- mean(gl_df_to_map$gender_gap)
 
-map <- df_to_map %>%
+gl_map <- gl_df_to_map %>%
   ggplot(aes(fill=gender_gap,linewidth=border_show,color=gender_gap))+
   geom_sf()+
   scale_fill_gradient2(low="#1B9E77",mid="white",high="#d7191c",midpoint=NATIONWIDE_AVG)+
@@ -54,4 +54,4 @@ map <- df_to_map %>%
   guides(linewidth="none",color="none")+
   geom_sf(data = . %>% filter(!border_show), fill=NA,col='black',lwd=0.5)
 
-ggsave(map, filename="gender_literacy_map.png", height=10, width=7, units="in", bg="black")
+ggsave(gl_map, filename="gender_literacy_map.png", height=10, width=7, units="in", bg="black")
