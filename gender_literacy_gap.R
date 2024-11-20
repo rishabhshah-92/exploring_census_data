@@ -6,11 +6,7 @@ library(readxl)
 library(stringr)
 library(geojsonsf)
 
-states <- geojson_sf("data_dump/india/Indian_States.geojson.txt") %>%
-  mutate(NAME_1=str_to_upper(str_replace_all(NAME_1," and ", " & ")),
-         NAME_1=str_replace(NAME_1,"ORISSA","ODISHA")) %>%
-  rename(area_name=NAME_1) %>%
-  st_as_sf(wkt="geometry")
+source('load_state_boundaries.R')
 
 df <- read_excel("data_dump/india/DDW-0000C-09.xlsx",sheet=2) %>%
   filter(urbanity=='Total' & area_name!='INDIA' & age_group=='Total') %>%
